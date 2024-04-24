@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Soccer</title>
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}"> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            margin-top: 20px;
+        }
+        .team-select {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fantasy Soccer</h1>
+        <form action="/select_players" method="post">
+            <div class="team-select">
+                <label for="team1">Select Team 1:</label>
+                <select name="team1" id="team1">
+                    {% for team in teams %}
+                        <option value="{{ team }}">{{ team }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="team-select">
+                <label for="team2">Select Team 2:</label>
+                <select name="team2" id="team2">
+                    {% for team in teams %}
+                        <option value="{{ team }}">{{ team }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="submit" value="Select Players">
+        </form>
+        <!-- Display the selected teams and best players here -->
+        {% if team1 and team2 %}
+            <h2>Team 1: {{ team1 }}</h2>
+            <h3>Best Players:</h3>
+            <ul>
+                {% for player in best_players_team1 %}
+                    <li>{{ player.split('/')[1].split('/')[0].replace('-', ' ') }}</li>
+                {% endfor %}
+            </ul>
+            <h2>Team 2: {{ team2 }}</h2>
+            <h3>Best Players:</h3>
+            <ul>
+                {% for player in best_players_team2 %}
+                    <li>{{ player.split('/')[1].split('/')[0].replace('-', ' ') }}</li>
+                {% endfor %}
+            </ul>
+            <form action="/predict_performance" method="post">
+                <input type="hidden" name="team1" value="{{ team1 }}">
+                <input type="hidden" name="team2" value="{{ team2 }}">
+                <input type="submit" value="Predict Performance">
+            </form>
+        {% endif %}
+        <!-- Prediction results will be displayed here -->
+        {% if predicted_stats %}
+            <h2>Prediction Results</h2>
+            <table>
+                <tr>
+                    <th>Player</th>
+                    <th>Predicted Goals</th>
+                    <th>Predicted Assists</th>
+                </tr>
+                {% for player, stats in predicted_stats.items() %}
+                    <tr>
+                        <td>{{ player.split('/')[1].split('/')[0].replace('-', ' ') }}</td>
+                        <td>{{ stats[0] }}</td>
+                        <td>{{ stats[1] }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+</body>
+</html>
