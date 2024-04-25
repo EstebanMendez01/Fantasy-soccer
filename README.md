@@ -27,7 +27,7 @@ pip install -r requirements.txt
 3. Run the Flask application:
 
 ```
-python app.py
+python fantasy.py
 ```
 
 ## Usage
